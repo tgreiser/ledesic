@@ -1,17 +1,5 @@
-/*
-This will allow you to configure the processing client.
-
-1. Put this file in your Processing project.
-2. Find the size( call near the top and change the height and width to 450
-	size(450, 450<there might be another arg here>)
-3. Find the line: opc = new OPC(this, "127.0.0.1", 7890);
-4. Find and remove any following LED initialization code. They look like:
-	opc.led<something ...>
-	opc.ledGrid(0, width/2, height/2, spacing, 0, true);
-5. Replace the initilization section you removed with:
-*/
-
-opc.led(0, 235, 219);
+public void LED_config(OPC opc) {
+  opc.led(0, 235, 219);
 opc.led(1, 250, 215);
 opc.led(2, 264, 210);
 opc.led(3, 279, 206);
@@ -184,10 +172,11 @@ opc.led(177, 120, 421);
 opc.led(178, 138, 428);
 opc.led(179, 155, 436);
 opc.led(180, 192, 443);
-opc.led(181, 211, 443);
-opc.led(182, 230, 442);
-opc.led(183, 249, 442);
-opc.led(184, 284, 434);
-opc.led(185, 302, 426);
-opc.led(186, 320, 418);
-opc.led(187, 338, 410);
+  opc.led(181, 211, 443);
+  opc.led(182, 230, 442);
+  opc.led(183, 249, 442);
+  opc.led(184, 284, 434);
+  opc.led(185, 302, 426);
+  opc.led(186, 320, 418);
+  opc.led(187, 338, 410);
+}
