@@ -8,7 +8,7 @@ void setup()
   dot = loadImage("dot.png");
 
   // Connect to the local instance of fcserver. You can change this line to connect to another computer's fcserver
-  opc = new OPC(this, "127.0.0.1", 7890);
+  opc = new OPC(this, "192.168.0.10", 7890);
   LED_config(opc);
 }
 
