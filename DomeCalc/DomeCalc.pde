@@ -18,8 +18,8 @@ void setup() {
   for (TableRow row : table.rows()) {
     
     int id = row.getInt("index");
-    String section = row.getString("section");
-    String bar = row.getString("bar");
+    String section = row.getString("Section");
+    String bar = row.getString("Bar");
     int x1 = int(float(row.getInt("x1")+10) / 2.666667);
     int x2 = int(float(row.getInt("x2")+10) / 2.666667);
     
