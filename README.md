@@ -40,7 +40,7 @@ https://github.com/scanlime/fadecandy
 
 Colin Worf started the LEDesic project and inspired the ideas contained here. Website/plug/kickstarter coming soon.
 
-I am Tim Greiser aka ir8prim8. Thanks to my partner Amanda for her ideas and support on this project.
-ir8 [at] prim8.net
-http://prim8.net/
+I am Tim Greiser aka ir8prim8. Thanks to my partner Amanda for her ideas and support on this project.  
+ir8 [at] prim8.net  
+http://prim8.net/  
 http://www.youtube.com/user/AuralFixationMT/videos
