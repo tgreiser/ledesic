@@ -25,10 +25,14 @@ int[][] pattern = {
 OPC opc;
 
 // Grid coordinates
-int gridX = 20;
+int gridX = 470;
 int gridY = 20;
 int gridSquareSize = 15;
 int gridSquareSpacing = 20;
+
+// FX offset
+int fxX = -170;
+int fxY = 30;
 
 // Timing info
 float rowsPerSecond = 2 * BPM / 60.0;
@@ -56,7 +60,7 @@ long startTime, pauseTime;
 
 void setup()
 {
-  size(450, 450);
+  size(850, 450);
 
   imgGreenDot = loadImage("greenDot.png");
   imgOrangeDot = loadImage("orangeDot.png");
@@ -92,7 +96,7 @@ void draw()
   float now = (m - startTime) * 1e-3;
   drawEffects(now);
   drawGrid(now);
-  drawInstructions();
+  //drawInstructions();
   println(frameRate);
 }
 
@@ -239,8 +243,8 @@ void drawDotEffect(int column, float time, PImage im)
   float fadeSpeed = motionSpeed * 1.0;
   float shrinkSpeed = motionSpeed * 1.2;
   float size = 200 - max(0, time * shrinkSpeed);
-  float centerX = ledX + (column - 1.5) * 75.0;
-  float topY = ledY + ledHeight/2 - time * motionSpeed;
+  float centerX = fxX + ledX + (column - 1.5) * 75.0;
+  float topY = fxY + ledY + ledHeight/2 - time * motionSpeed;
   int brightness = int(255 - max(0, fadeSpeed * time));
 
   // Adjust the 'top' position so the dot seems to appear on-time
@@ -264,7 +268,7 @@ void drawSpinnerEffect(float time, PImage im)
 
   if (alpha > 0) {
     pushMatrix();
-    translate(ledX, ledY);
+    translate(fxX + ledX, fxY + ledY);
     rotate(angle);
     blendMode(ADD);
     tint(alpha);
