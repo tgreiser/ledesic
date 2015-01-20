@@ -24,7 +24,7 @@ void setup()
   movie.loop();
   
   // Connect to the local instance of fcserver. You can change this line to connect to another computer's fcserver
-  opc = new OPC(this, "72.174.70.90", 7890);
+  opc = new OPC(this, "127.0.0.1", 7890);
   LED_config(opc);
   
 }
@@ -76,6 +76,20 @@ void draw()
 
 void keyPressed() {
   println(key);
+  
+  if (key >= 48 && key <= 57) {
+    String file = "";
+    try {
+      file = d1.getItem(key-48).getText();
+      
+      println("Loading " + file);
+      movie = new Movie(this, file);
+      movie.loop();
+    } catch (java.lang.IndexOutOfBoundsException e) {
+      // no need to complain
+    }  
+  }
+  
   if (key == CODED) {
     
   }
