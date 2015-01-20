@@ -13,7 +13,7 @@ void setup() {
   
   table = loadTable("bars.csv", "header");
 
-  println(table.getRowCount() + " total rows in table"); 
+ // println(table.getRowCount() + " total rows in table"); 
 
   for (TableRow row : table.rows()) {
     
@@ -33,7 +33,7 @@ void setup() {
     
     int y2 = int(ty2 / 2.666667);
     
-    int num_leds = 4;
+    int num_leds = 30;
     float[] xs = interpolate(x1, x2, num_leds);
     float[] ys = interpolate(y1, y2, num_leds); 
     
