@@ -1,4 +1,5 @@
 Table table;
+StringList data;
 
 // The total dimensions are originally
 // 1200 x 1200
@@ -11,27 +12,42 @@ Table table;
 // 450 x 450
 void setup() {
   
-  table = loadTable("bars.csv", "header");
+  table = loadTable("bars-fullsize.csv", "header");
 
- // println(table.getRowCount() + " total rows in table"); 
-
+  data = new StringList();
+  data.append("public void LED_config(OPC opc) {");
   for (TableRow row : table.rows()) {
     
     int id = row.getInt("index");
     String section = row.getString("Section");
     String bar = row.getString("Bar");
-    int x1 = int(float(row.getInt("x1")+10) / 2.666667);
-    int x2 = int(float(row.getInt("x2")+10) / 2.666667);
+    int x1 = 0;
+    int x2 = 0;
+    int y1 = 0;
+    int y2 = 0;
+    if (row.getString("reverse") == "1") {
+      x1 = row.getInt("x2");
+      x2 = row.getInt("x1");
+      y1 = row.getInt("y2");
+      y2 = row.getInt("y1");
+    } else {
+      x1 = row.getInt("x1");
+      x2 = row.getInt("x2");
+      y1 = row.getInt("y1");
+      y2 = row.getInt("y2");
+    }
+    x1 = int(float(x1+10) / 2.666667);
+    x2 = int(float(x2+10) / 2.666667);
     
-    float ty1 = float(row.getInt("y1")*-1);
+    float ty1 = float(y1*-1);
     ty1 += 1200;
     
-    int y1 = int(ty1 / 2.666667);
+    y1 = int(ty1 / 2.666667);
     
-    float ty2 = float(row.getInt("y2")*-1);
+    float ty2 = float(y2*-1);
     ty2 += 1200;
     
-    int y2 = int(ty2 / 2.666667);
+    y2 = int(ty2 / 2.666667);
     
     int num_leds = 30;
     float[] xs = interpolate(x1, x2, num_leds);
@@ -42,11 +58,15 @@ void setup() {
     //println(ys);
     
     for (int iX = 0; iX < num_leds; iX++) {
-      println("opc.led(" + (id+iX) + ", " + int(xs[iX]) + ", " + int(ys[iX]) + ");");
+      data.append("\topc.led(" + (id+iX) + ", " + int(xs[iX]) + ", " + int(ys[iX]) + ");");
     }
     
   }
+  data.append("}");
   
+  // write out file
+  saveStrings("data/LED_config.pde", data.array());
+  println("Generated LED_config.pde");
 }
 
 float[] interpolate(int p1, int p2, int times) {
