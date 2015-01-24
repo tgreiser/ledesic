@@ -5,6 +5,7 @@ Movie movie;
 OPC opc;
 ControlP5 cp5;
 ListBox d1;
+boolean playing;
 int size = 450;
 
 
@@ -76,7 +77,15 @@ void draw()
 
 void keyPressed() {
   println(key);
-  
+  if (key == 32) {
+    if (playing == true) {
+      movie.pause();
+      playing = false;
+    } else {
+      movie.play();
+      playing = true;
+    }
+  }
   if (key >= 48 && key <= 57) {
     String file = "";
     try {
