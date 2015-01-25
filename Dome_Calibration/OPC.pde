@@ -357,5 +357,9 @@ public class OPC
     sendColorCorrectionPacket();
     sendFirmwareConfigPacket();
   }
+  
+  void reset() {
+    pixelLocations = null;
+  }
 }
 
