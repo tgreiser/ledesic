@@ -16,7 +16,7 @@ TableRow orow;
 void setup() {
   
   table = loadTable("dome.txt", "header, tsv");
-  map = loadTable("demo_dome_overlay.txt", "header, tsv");
+  map = loadTable("full_dome_overlay.txt", "header, tsv");
   out = new Table();
   out.addColumn("led");
   out.addColumn("x");
