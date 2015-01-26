@@ -26,7 +26,11 @@ void setup()
   
   // Connect to the local instance of fcserver. You can change this line to connect to another computer's fcserver
   opc = new OPC(this, "127.0.0.1", 7890);
-  LED_config(opc);
+  section1(opc);
+  section2(opc);
+  section3(opc);
+  section4(opc);
+  section5(opc);
   
 }
 
