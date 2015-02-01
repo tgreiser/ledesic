@@ -15,11 +15,21 @@ void setup() {
   table = loadTable("bars-fullsize.csv", "header");
 
   data = new StringList();
-  data.append("public void LED_config(OPC opc) {");
+  String lastSection = "";
+  
   for (TableRow row : table.rows()) {
     
     int id = row.getInt("index");
     String section = row.getString("Section");
+    println(section+" = "+lastSection);
+    if (section.equals(lastSection) == false) {
+      println("No match");
+      if (lastSection != "") {
+        data.append("}");
+      }
+      data.append("public void section"+section+"(OPC opc) {");
+      lastSection = section;
+    }
     String bar = row.getString("Bar");
     int x1 = 0;
     int x2 = 0;
