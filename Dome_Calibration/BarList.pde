@@ -2,15 +2,30 @@ int HANDLE_SIZE = 6;
 
 class BarList {
   ListBox pts;
+  Textfield filename;
   Bar[] bars;
   int selected = -1;
   Handle h1;
   Handle h2;
   
   BarList(int align) {
-      pts = cp5.addListBox("bars")
-        .setPosition(align+50, 100);
-      customizePts(pts);
+    pts = cp5.addListBox("bars")
+      .setPosition(align+50, 100);
+    customizePts(pts);
+      
+    cp5.addButton("Save")
+      .setPosition(align+320, 80)
+      .setSize(30, 19);
+      
+    filename = cp5.addTextfield("filename")
+      .setPosition(align+160, 80)
+      .setSize(150, 19)
+      .setValue("bars.csv");
+      
+  }
+  
+  boolean isFocus() {
+    return filename.isFocus();
   }
   
   void leds(OPC opc, int section) {
@@ -36,7 +51,7 @@ class BarList {
     getList(pts);
   }
   
-  void save(String filename) {
+  void save() {
     String[] data = new String[bars.length+1];
     int iX = 1;
     data[0] = "section,bar,x1,y1,x2,y2,index,count,name";
@@ -44,7 +59,9 @@ class BarList {
       data[iX++] = str(b.section)+","+str(b.bar)+","+str(b.x1)+","+str(b.y1)+","+str(b.x2)+","+
         str(b.y2)+","+str(b.index)+","+str(b.count)+","+b.name;
     } // finish CSV TODO
-    saveStrings("data/"+filename, data);
+    String fn = "data/" + filename.getText();
+    println("Saving " + fn);
+    saveStrings(fn, data);
     updateConfig();
   }
   

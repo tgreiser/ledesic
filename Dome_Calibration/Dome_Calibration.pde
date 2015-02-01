@@ -31,9 +31,7 @@ void setup()
     .setSize(200, 19);
     */
     
-  cp5.addButton("Save")
-    .setPosition(align+150, 100)
-    .setSize(200, 19); 
+   
   
   checkbox = cp5.addCheckBox("sections")
     .setPosition(align+240, 10)
@@ -119,7 +117,7 @@ void controlEvent(ControlEvent theEvent) {
       
       //Bar s1b1 = new Bar();
     } else if (theEvent.isFrom(cp5.getController("Save"))) {
-      bars.save("bars.csv");
+      bars.save();
     }
     println("got a control event from controller with id "+theEvent.getController().getId());
   }
@@ -131,8 +129,12 @@ void checkBox(float[] a) {
 }
 
 void keyPressed() {
+  println(bars.isFocus());
+  if (bars.isFocus() == true) {
+    return;
+  }
+  
   keyPressedVideo();
-  println(str(int(key)));
   override = 0;
   //mode = key - 48;
   if (key == 46) {
