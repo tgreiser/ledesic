@@ -59,8 +59,12 @@ class BarList {
     
     println("Selecting " + bars[sel].getListName());
     if (selected >=0) {
+      ListBoxItem prevItem = pts.getItem(selected);
+      prevItem.setColorBackground(color(60));
     }
     selected = sel;
+    pts.getItem(selected).setColorBackground(color(255, 128));
+    
     h1 = new Handle(bars[sel], true, float(HANDLE_SIZE));
     h2 = new Handle(bars[sel], false, float(HANDLE_SIZE));
   }
