@@ -6,6 +6,7 @@ int mode = 1;
 ControlP5 cp5;
 
 CheckBox checkbox;
+BarList bars;
 
 String server = "127.0.0.1";
 
@@ -23,10 +24,24 @@ void setup()
   
   cp5 = new ControlP5(this);
   
+  /*
+  cp5.addButton("Add Bar")
+    .setValue(99)
+    .setPosition(align+50, 420)
+    .setSize(200, 19);
+    */
+    
+  cp5.addButton("Save")
+    .setPosition(align+150, 100)
+    .setSize(200, 19); 
+  
   checkbox = cp5.addCheckBox("sections")
     .setPosition(align+240, 10)
     ;
     
+  bars = new BarList(align);
+  bars.load("bars.csv");
+  
   customize(checkbox);
 
   dot = loadImage("dot.png");
@@ -67,6 +82,7 @@ void draw()
   } else {
     drawRadar();
   }
+  bars.draw();
 }
 
 void updateConfig() {
@@ -74,22 +90,40 @@ void updateConfig() {
 
   opc.reset();
   
-  if (vals[0] == 1.0) section1(opc);
-  if (vals[1] == 1.0) section2(opc);
-  if (vals[2] == 1.0) section3(opc);
-  if (vals[3] == 1.0) section4(opc);
-  if (vals[4] == 1.0) section5(opc);
+  if (vals[0] == 1.0) bars.leds(opc, 1);
+  if (vals[1] == 1.0) bars.leds(opc, 2);
+  if (vals[2] == 1.0) bars.leds(opc, 3);
+  if (vals[3] == 1.0) bars.leds(opc, 4);
+  if (vals[4] == 1.0) bars.leds(opc, 5);
 }
 
 void controlEvent(ControlEvent theEvent) {
- // videoEvent(theEvent);
+  
   if (theEvent.isFrom(checkbox)) {
     print("got an event from "+checkbox.getName()+"\t\n");
     // checkbox uses arrayValue to store the state of 
     // individual checkbox-items. usage:
     //opc.dispose();
     updateConfig();  
+  } else if (theEvent.name().equals("videos")) {
+    println("Event: "+theEvent.getGroup().getValue()+" from "+ theEvent.getGroup());
+    playVideo(int(theEvent.getGroup().getValue()));
+  } else if (theEvent.name().equals("bars")) {
+    int sel = int(theEvent.getGroup().getValue());
+    bars.selected(sel);
   }
+  
+  if (theEvent.isController()) {
+    if (theEvent.isFrom(cp5.getController("Add Bar"))) {
+      println(theEvent.getController().getName());
+      
+      //Bar s1b1 = new Bar();
+    } else if (theEvent.isFrom(cp5.getController("Save"))) {
+      bars.save("bars.csv");
+    }
+    println("got a control event from controller with id "+theEvent.getController().getId());
+  }
+
 }
 
 void checkBox(float[] a) {
@@ -131,6 +165,11 @@ float override = 0;
 
 void mousePressed() {
   override();
+  bars.clicked(mouseX, mouseY);
+}
+
+void mouseReleased() {
+  bars.stopDragging();
 }
 
 void mouseDragged() {
@@ -175,5 +214,9 @@ void drawDot() {
   
   // Draw it centered at the mouse location
   image(dot, mouseX - dotSize/2, mouseY - dotSize/2, dotSize, dotSize);
+}
+
+void stop() {
+  stopVideo();
 }
 

@@ -8,7 +8,7 @@ boolean playing;
 void setupVideo() {
   background(0);
 
-  d1 = cp5.addListBox("myList-d1")
+  d1 = cp5.addListBox("videos")
     .setPosition(w+50, 0)
     .setSize(200,200);
   
@@ -16,6 +16,11 @@ void setupVideo() {
   
   movie = new Movie(this, "aeDomeDesign_1.mov");
   movie.loop();
+  playing = true;
+}
+
+void stopVideo() {
+  movie = null;
 }
 
 void customize(ListBox ddl) {
@@ -28,34 +33,24 @@ void customize(ListBox ddl) {
   ddl.captionLabel().style().marginLeft = 3;
   ddl.valueLabel().style().marginTop = 3;
   File[] files = new File(sketchPath+"/data").listFiles();
+  int iX = 0;
   for (int i=0;i<files.length;i++) {
     String name = files[i].getName();
+    
     if (name.toLowerCase().endsWith(".mov") == false) { continue; }
-    ddl.addItem(files[i].getName(), i);
+    println("Added " + name + " at " + str(iX));
+    ddl.addItem(name, iX++);
   }
   //ddl.scroll(0);
   ddl.setColorBackground(color(60));
   ddl.setColorActive(color(255, 128));
 }
 
-void videoEvent(ControlEvent theEvent) {
-  // DropdownList is of type ControlGroup.
-  // A controlEvent will be triggered from inside the ControlGroup class.
-  // therefore you need to check the originator of the Event with
-  // if (theEvent.isGroup())
-  // to avoid an error message thrown by controlP5.
-
-  if (theEvent.isGroup()) {
-    // check if the Event was triggered from a ControlGroup
-    int sel = int(theEvent.getGroup().getValue());
-    String file = d1.getItem(sel).getText();
-    println("event from group : "+file+" from "+theEvent.getGroup());
-    movie = new Movie(this, file);
-    movie.loop();
-  } 
-  else if (theEvent.isController()) {
-    println("event from controller : "+theEvent.getController().getValue()+" from "+theEvent.getController());
-  }
+void playVideo(int sel) {
+  String file = d1.getItem(sel).getText();
+  println("Playing video : "+file);
+  movie = new Movie(this, file);
+  movie.loop();
 }
 
 void drawVideo()
