@@ -27,7 +27,7 @@ class Handle {
   void draw() {
     
     if (dragging) {
-      fill(50);
+      fill(#FF7700);
       x = mouseX + offsetX;
       y = mouseY + offsetY;
     } else {
@@ -38,9 +38,9 @@ class Handle {
         stroke(255);
       } else {
         mouseOver = false;
-        stroke(255, 108, 3);
+        stroke(#FF7700);
       }
-      fill(255, 108, 3);
+      fill(#FF7700);
     }
     ellipse(x+offsetX, y+offsetY, size, size);
   }
@@ -50,6 +50,7 @@ class Handle {
   }
   
   void arrow(int x1, int y1, int x2, int y2) {
+    stroke(#FF7700);
     line(x1, y1, x2, y2);
     pushMatrix();
     translate(x2, y2);

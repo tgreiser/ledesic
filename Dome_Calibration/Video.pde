@@ -8,30 +8,20 @@ boolean playing;
 void setupVideo() {
   background(0);
 
-  d1 = cp5.addListBox("videos")
-    .setPosition(w+50, 0)
-    .setSize(200,200);
+  int spacer = 10;
+  d1 = c5.addListBox("videos")
+    .setPosition(w+spacer, 15+spacer)
+    .setSize(230,205);
   
-  customize(d1);
+  customize(d1, "Movies - Press 0-1");
+  initVideos();
   
   movie = new Movie(this, "aeDomeDesign_1.mov");
   movie.loop();
   playing = true;
 }
 
-void stopVideo() {
-  movie = null;
-}
-
-void customize(ListBox ddl) {
-  // a convenience function to customize a DropdownList
-  ddl.setBackgroundColor(color(190));
-  ddl.setItemHeight(20);
-  ddl.setBarHeight(15);
-  ddl.captionLabel().set("dropdown");
-  ddl.captionLabel().style().marginTop = 3;
-  ddl.captionLabel().style().marginLeft = 3;
-  ddl.valueLabel().style().marginTop = 3;
+void initVideos() {
   File[] files = new File(sketchPath+"/data").listFiles();
   int iX = 0;
   for (int i=0;i<files.length;i++) {
@@ -39,11 +29,12 @@ void customize(ListBox ddl) {
     
     if (name.toLowerCase().endsWith(".mov") == false) { continue; }
     println("Added " + name + " at " + str(iX));
-    ddl.addItem(name, iX++);
+    d1.addItem(name, iX++);
   }
-  //ddl.scroll(0);
-  ddl.setColorBackground(color(60));
-  ddl.setColorActive(color(255, 128));
+}
+
+void stopVideo() {
+  movie = null;
 }
 
 void playVideo(int sel) {

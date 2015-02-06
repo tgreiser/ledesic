@@ -4,6 +4,11 @@ class Bar {
   float x2;
   float y2;
   
+  float ox1;
+  float oy1;
+  float ox2;
+  float oy2;
+  
   String name;
   boolean active = true;
   
@@ -23,6 +28,22 @@ class Bar {
     y1 = _y1;
     x2 = _x2;
     y2 = _y2;
+    backupLocations();
+  }
+  
+  void backupLocations() {
+    ox1 = x1;
+    oy1 = y1;
+    ox2 = x2;
+    oy2 = y2;
+  }
+  
+  void revert() {
+    x1 = ox1;
+    y1 = oy1;
+    x2 = ox2;
+    y2 = oy2;
+    updateConfig();
   }
   
   String getListName() {

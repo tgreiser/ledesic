@@ -3,10 +3,30 @@ import controlP5.*;
 OPC opc;
 PImage dot;
 int mode = 1;
-ControlP5 cp5;
+ControlP5 c5;
 
 CheckBox checkbox;
 BarList bars;
+Textlabel logo;
+Textlabel tsec;
+
+color cb1 = #728CA6;
+color cb2 = #4A6B8A;
+color cb3 = #2A4D6E;
+color cb4 = #133453;
+color cb5 = #041E37;
+
+color cp1 = #827FB2;
+color cp2 = #585594;
+color cp3 = #363377;
+color cp4 = #1D1959;
+color cp5 = #0B083B;
+
+color cg1 = #72AB97;
+color cg2 = #478E75;
+color cg3 = #267257;
+color cg4 = #0E553C;
+color cg5 = #003925;
 
 String server = "127.0.0.1";
 
@@ -17,12 +37,12 @@ void setup()
 {
   size(900, 450, P3D);
   
-  int align = 500;
+  int align = 450;
   frame.setResizable(false);
   
   opc = new OPC(this, server, 7890);
   
-  cp5 = new ControlP5(this);
+  c5 = new ControlP5(this);
   
   /*
   cp5.addButton("Add Bar")
@@ -30,17 +50,21 @@ void setup()
     .setPosition(align+50, 420)
     .setSize(200, 19);
     */
-    
-   
   
-  checkbox = cp5.addCheckBox("sections")
-    .setPosition(align+240, 10)
-    ;
+  logo = c5.addTextlabel("label")
+                    .setText("LEDMAP")
+                    .setPosition(730,0)
+                    .setColorValue(cg1)
+                    .setFont(createFont("Consolas",40))
+                    ;
+  tsec = new Textlabel(c5,"Toggle Sections",align+285,55, 100,20, 255, 0);
     
-  bars = new BarList(align);
-  bars.load("bars.csv");
-  
+  checkbox = c5.addCheckBox("sections")
+    .setPosition(align+250, 70);
   customize(checkbox);
+
+  bars = new BarList(align);
+  bars.load(sketchPath+"/data/bars.csv");
 
   dot = loadImage("dot.png");
   frameRate(60);
@@ -50,12 +74,12 @@ void setup()
 }
 
 void customize(CheckBox cb) {
-  cb.setColorForeground(color(120))
-                .setColorActive(color(255))
+  cb.setColorForeground(cg1)
+                .setColorActive(cg4)
                 .setColorLabel(color(255))
                 .setSize(20, 20)
                 .setItemsPerRow(5)
-                .setSpacingColumn(10)
+                .setSpacingColumn(20)
                 .setSpacingRow(20)
                 .addItem("1", 1)
                 .addItem("2", 2)
@@ -66,9 +90,29 @@ void customize(CheckBox cb) {
                 ;
 }
 
+void customize(ListBox ddl, String label) {
+  // a convenience function to customize a DropdownList
+  ddl.setBackgroundColor(cb2);
+  ddl.setItemHeight(20);
+  ddl.setBarHeight(15);
+  ddl.captionLabel().set(label);
+  ddl.captionLabel().style().marginTop = 3;
+  ddl.captionLabel().style().marginLeft = 3;
+  ddl.captionLabel().setColor(cg1);
+  ddl.valueLabel().style().marginTop = 3;
+  
+  //ddl.scroll(0);
+  ddl.setColorBackground(cb3);
+  ddl.setColorActive(cb4);
+}
+
 void draw()
 {
   background(0);
+  
+  fill(cb5);
+  rect(450, 0, 900, 450);
+  
   //println(frameRate);
 
   if (mode == 1) {
@@ -81,9 +125,12 @@ void draw()
     drawRadar();
   }
   bars.draw();
+  tsec.draw(this);
+  stroke(color(0));
 }
 
 void updateConfig() {
+  if (checkbox == null || bars == null || opc == null) { return; }
   float[] vals = checkbox.getArrayValue();
 
   opc.reset();
@@ -112,12 +159,18 @@ void controlEvent(ControlEvent theEvent) {
   }
   
   if (theEvent.isController()) {
-    if (theEvent.isFrom(cp5.getController("Add Bar"))) {
+    if (theEvent.isFrom(c5.getController("Add Bar"))) {
       println(theEvent.getController().getName());
       
       //Bar s1b1 = new Bar();
-    } else if (theEvent.isFrom(cp5.getController("Save"))) {
+    } else if (theEvent.isFrom(c5.getController("Export Bars"))) {
       bars.save();
+    } else if (theEvent.isFrom(c5.getController("Import Bars"))) {
+      bars.importBrowse();
+    } else if (theEvent.isFrom(c5.getController("Reset"))) {
+      bars.reset();
+    } else if (theEvent.isFrom(c5.getController("Apply"))) {
+      bars.apply();
     }
     println("got a control event from controller with id "+theEvent.getController().getId());
   }
@@ -176,6 +229,15 @@ void mouseReleased() {
 
 void mouseDragged() {
   override();
+}
+
+void saveCallback(File selected) {
+  bars.saveCallback(selected);
+}
+
+void loadCallback(File selected) {
+  if (selected == null) { return; }
+  bars.load(selected.getAbsolutePath());
 }
 
 void override() {
