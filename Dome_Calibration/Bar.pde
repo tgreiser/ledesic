@@ -12,13 +12,13 @@ class Bar {
   String name;
   boolean active = true;
   
-  int section;
+  int driver;
   int bar;
   int index;
   int count;
   
-  Bar(String _name, int _section, int _bar, int _index, int _count, float _x1, float _y1, float _x2, float _y2) {
-    section = _section;
+  Bar(String _name, int _driver, int _bar, int _index, int _count, float _x1, float _y1, float _x2, float _y2) {
+    driver = _driver;
     bar = _bar;
     index = _index;
     count = _count;
@@ -32,6 +32,7 @@ class Bar {
   }
   
   void backupLocations() {
+    if (frameCount > 0) { println("Backing up bar "+name); }
     ox1 = x1;
     oy1 = y1;
     ox2 = x2;
@@ -39,6 +40,7 @@ class Bar {
   }
   
   void revert() {
+    println("Revering bar " +name);
     x1 = ox1;
     y1 = oy1;
     x2 = ox2;

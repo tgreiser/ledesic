@@ -79,5 +79,7 @@ void keyPressedVideo() {
 }
 
 void movieEvent(Movie m) {
-  m.read();
+  if (m != null) {
+    m.read();
+  }
 }

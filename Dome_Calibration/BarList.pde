@@ -2,11 +2,19 @@ int HANDLE_SIZE = 6;
 
 class BarList {
   ListBox pts;
-  Textfield section;
+  Textfield driver;
   Textfield bar;
   Textfield count;
   Textfield index;
   Textfield name;
+  
+  Button reset;
+  Button delete;
+  Button add_seg; 
+  Button apply;
+  Button imp;
+  Button exp;
+  Button swap;
   
   Bar[] bars;
   int selected = -1;
@@ -22,26 +30,26 @@ class BarList {
     pts = c5.addListBox("bars")
       .setPosition(align+spacer, 15+top)
       .setSize(230, 205);
-    customize(pts, "BARS");
+    customize(pts, "Segments");
     
     int left = align+spacer*2+230;
-    c5.addButton("Import Bars")
+    imp = c5.addButton("Import Segs")
       .setPosition(left, top)
       .setColorBackground(colButton)
       .setSize(55, 19);    
     
-    c5.addButton("Export Bars")
+    exp = c5.addButton("Export Segs")
       .setPosition(left+spacer+55, top)
       .setColorBackground(colButton)
       .setSize(57, 19);
       
     // form
-    section = c5.addTextfield("section")
+    driver = c5.addTextfield("driver")
       .setPosition(left, top+30)
       .setSize(55, 19)
       .setColor(colForm);
       
-    bar =c5.addTextfield("bar")
+    bar =c5.addTextfield("segment")
       .setPosition(left+spacer+55, top+30)
       .setSize(55, 19)
       .setColor(colForm);
@@ -61,24 +69,47 @@ class BarList {
       .setSize(110+spacer, 19)
       .setColor(colForm);
       
-    c5.addButton("Reset")
-      .setPosition(left, 420)
-      .setColorBackground(colButton)
-      .setSize(55, 19);  
     
-    c5.addButton("Apply")
+      
+    add_seg = c5.addButton("Add Seg")
+      .setPosition(left, 390)
+      .setColorBackground(colButton)
+      .setSize(55, 19);
+    
+    apply = c5.addButton("Apply")
+      .setColorBackground(colButton)
+      .setPosition(left, 420)
+      .setSize(55, 19);
+      
+    swap = c5.addButton("Swap Pts")
       .setColorBackground(colButton)
       .setPosition(left+spacer+55, 420)
       .setSize(55, 19);
+      
+      reset = c5.addButton("Reset")
+      .setPosition(left+spacer*2+55*2, 420)
+      .setColorBackground(colButton)
+      .setSize(55, 19);
+      
+    delete = c5.addButton("Delete Seg")
+      .setPosition(left+spacer*2+55*2, 390)
+      .setColorBackground(colButton)
+      .setSize(55, 19);
+      
+    hideElements();
   }
   
   boolean isFocus() {
-    return section.isFocus() || bar.isFocus() || count.isFocus() || index.isFocus() || name.isFocus();
+    return driver.isFocus() || bar.isFocus() || count.isFocus() || index.isFocus() || name.isFocus();
   }
   
-  void leds(OPC opc, int section) {
+  void leds(OPC opc, int _driver) {
     for (Bar b : bars) {
-      if (b.section == section) {
+      if (b == null) {
+        println("Null record in bars!");
+        continue;
+      }
+      if (b.driver == _driver) {
         b.leds(opc);
       }
     }
@@ -90,17 +121,87 @@ class BarList {
     saveTextfields();
     
     updateConfig();
-    getList(pts);
     
     deselect();
   }
   
   void saveTextfields() {
-    bars[selected].section = int(section.getText());
+    if (bars[selected] == null) {
+      println("Null record! Selected index:");
+      println(selected);
+      return;
+    }
+    bars[selected].driver = int(driver.getText());
     bars[selected].bar = int(bar.getText());
     bars[selected].count = int(count.getText());
     bars[selected].index = int(index.getText());
     bars[selected].name = name.getText();
+  }
+  
+  void controlEvent(ControlEvent theEvent) {
+    if (theEvent.isFrom(delete)) {
+      deleteBar();
+    } else if (theEvent.isFrom(reset)) {
+      reset();
+    } else if (theEvent.isFrom(add_seg)) {
+      addSegment();
+    } else if (theEvent.isFrom(exp)) {
+      save();
+    } else if (theEvent.isFrom(imp)) {
+      importBrowse();
+    } else if (theEvent.isFrom(apply)) {
+      apply();
+    } else if (theEvent.isFrom(pts)) {
+      int sel = int(theEvent.getGroup().getValue());
+      selected(sel, true);
+    } else if (theEvent.isFrom(swap)) {
+      swapSelectedPoints();
+    }
+  }
+  
+  void swapSelectedPoints() {
+    if (selected < 0) { return; }
+    
+    bars[selected].backupLocations();
+    float tx = bars[selected].x1;
+    float ty = bars[selected].y1;
+    bars[selected].x1 = bars[selected].x2;
+    bars[selected].y1 = bars[selected].y2;
+    bars[selected].x2 = tx;
+    bars[selected].y2 = ty;
+    
+    //updateConfig();
+    selected(selected, false);
+  }
+  
+  void addSegment() {
+    if (selected == -1) { selected = bars.length; }
+    
+    bars = array_add(bars, selected);
+    println("Selected " + str(selected)+" - Bars length " + str(bars.length));
+    int new_ptr = selected;
+    if (selected != bars.length-1) { deselect(); }
+    updateConfig();
+    selected(new_ptr, true);
+    driver.setFocus(true);
+    
+    float scroll = float(new_ptr+1) / float(bars.length);
+    println("Scroll to " + str(scroll));
+    pts.scroll(scroll);
+  }
+  
+  void deleteBar() {
+    if (selected > -1) {
+      println("Deleting!");
+      int new_ptr = selected;
+      deselect();
+      
+      pts.removeItem(bars[new_ptr].name);
+      bars = array_remove(bars, new_ptr);
+      
+      updateConfig();
+      println("Left: " + str(bars.length));
+    }
   }
   
   // de-select everything, null the handles, trigger revert on the bar.
@@ -112,7 +213,7 @@ class BarList {
   
   void deselect() {
     unset(selected);
-    section.setValue("");
+    driver.setValue("");
     bar.setValue("");
     count.setValue("");
     index.setValue("");
@@ -120,6 +221,7 @@ class BarList {
     selected = -1;
     h1 = null;
     h2 = null;
+    hideElements();
   }
   
   void importBrowse() {
@@ -133,13 +235,12 @@ class BarList {
     bars = new Bar[table.getRowCount()];
     int iX = 0;
     for (TableRow row : table.rows()) {
-      bars[iX++] = new Bar(row.getString("name"), row.getInt("section"), row.getInt("bar"), row.getInt("index"), row.getInt("count"),
+      bars[iX++] = new Bar(row.getString("name"), row.getInt("driver"), row.getInt("bar"), row.getInt("index"), row.getInt("count"),
         row.getFloat("x1"), row.getFloat("y1"),
         row.getFloat("x2"), row.getFloat("y2")
         );
     }
     
-    getList(pts);
     updateConfig();
   }
   
@@ -155,9 +256,9 @@ class BarList {
     println("Saving " + fn);
     String[] data = new String[bars.length+1];
     int iX = 1;
-    data[0] = "section,bar,x1,y1,x2,y2,index,count,name";
+    data[0] = "driver,bar,x1,y1,x2,y2,index,count,name";
     for (Bar b : bars) {
-      data[iX++] = str(b.section)+","+str(b.bar)+","+str(b.x1)+","+str(b.y1)+","+str(b.x2)+","+
+      data[iX++] = str(b.driver)+","+str(b.bar)+","+str(b.x1)+","+str(b.y1)+","+str(b.x2)+","+
         str(b.y2)+","+str(b.index)+","+str(b.count)+","+b.name;
     } // finish CSV TODO
     
@@ -165,14 +266,18 @@ class BarList {
     updateConfig();
   }
   
-  void getList(ListBox ddl) {
-    ddl.clear();
+  void buildList() {
+    pts.clear();
     for (int iX = 0; iX < bars.length; iX++) {
-      ddl.addItem(bars[iX].getListName(), iX);
+      if (bars[iX] == null) {
+        println("Bar is null at " + str(iX));
+        continue;
+      }
+      pts.addItem(bars[iX].getListName(), iX);
     }
   }
   
-  void selected(int sel) {
+  void selected(int sel, boolean setUndo) {
     if (sel >= bars.length) { return; }
     
     println("Selecting " + bars[sel].getListName());
@@ -185,15 +290,41 @@ class BarList {
     selected = sel;
     pts.getItem(selected).setColorBackground(cg2);
     
-    bars[sel].backupLocations();
+    if (setUndo == true) { bars[sel].backupLocations(); }
     h1 = new Handle(bars[sel], true, float(HANDLE_SIZE));
     h2 = new Handle(bars[sel], false, float(HANDLE_SIZE));
     
-    section.setValue(str(bars[sel].section));
+    driver.setValue(str(bars[sel].driver));
     bar.setValue(str(bars[sel].bar));
     count.setValue(str(bars[sel].count));
     index.setValue(str(bars[sel].index));
     name.setValue(bars[sel].name);
+    
+    showElements();
+  }
+  
+  void showElements() {
+    driver.show();
+    bar.show();
+    count.show();
+    index.show();
+    name.show();
+    delete.show();
+    reset.show();
+    apply.show();
+    swap.show();
+  }
+  
+  void hideElements() {
+    driver.hide();
+    bar.hide();
+    count.hide();
+    index.hide();
+    name.hide();
+    delete.hide();
+    reset.hide();
+    apply.hide();
+    swap.hide();
   }
   
   void unset(int index) {
@@ -237,4 +368,22 @@ void customizePts(ListBox ddl) {
   //ddl.scroll(0);
   ddl.setColorBackground(color(60));
   ddl.setColorActive(color(255, 128));
+}
+
+Bar[] array_remove(Bar array[], int item) {
+  println("Removing segment at index " + str(item));
+  Bar outgoing[] = new Bar[array.length - 1];
+  System.arraycopy(array, 0, outgoing, 0, item);
+  System.arraycopy(array, item+1, outgoing, item, array.length - (item + 1));
+  return outgoing;
+}
+
+Bar[] array_add(Bar array[], int at) {
+  println("Adding segment at index " + str(at));
+  Bar outgoing[] = new Bar[array.length + 1];
+  System.arraycopy(array, 0, outgoing, 0, at);
+  outgoing[at] = new Bar("", 0, 0, 10, 0,
+    0.0, 0.0, 25.0, 25.0);
+  System.arraycopy(array, at, outgoing, at+1, array.length - (at));
+  return outgoing;
 }

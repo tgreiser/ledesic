@@ -62,9 +62,7 @@ class Handle {
   }
   
   void clicked(float mx, float my) {
-    println("Clicked " + str(mx) +" " + str(my));
     if (mouseOver) {
-      println("Dragging...");
       dragging = true;
       offsetX = x-mx;
       offsetY = y-my;

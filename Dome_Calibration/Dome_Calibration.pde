@@ -44,22 +44,15 @@ void setup()
   
   c5 = new ControlP5(this);
   
-  /*
-  cp5.addButton("Add Bar")
-    .setValue(99)
-    .setPosition(align+50, 420)
-    .setSize(200, 19);
-    */
-  
   logo = c5.addTextlabel("label")
-                    .setText("LEDMAP")
-                    .setPosition(730,0)
+                    .setText("OCTORAIL")
+                    .setPosition(705,0)
                     .setColorValue(cg1)
                     .setFont(createFont("Consolas",40))
                     ;
-  tsec = new Textlabel(c5,"Toggle Sections",align+285,55, 100,20, 255, 0);
+  tsec = new Textlabel(c5,"Toggle Drivers",align+285,55, 100,20, 255, 0);
     
-  checkbox = c5.addCheckBox("sections")
+  checkbox = c5.addCheckBox("drivers")
     .setPosition(align+250, 70);
   customize(checkbox);
 
@@ -69,7 +62,6 @@ void setup()
   dot = loadImage("dot.png");
   frameRate(60);
 
-  //updateConfig();
   setupVideo();
 }
 
@@ -131,6 +123,7 @@ void draw()
 
 void updateConfig() {
   if (checkbox == null || bars == null || opc == null) { return; }
+  println("updateConfig");
   float[] vals = checkbox.getArrayValue();
 
   opc.reset();
@@ -140,6 +133,8 @@ void updateConfig() {
   if (vals[2] == 1.0) bars.leds(opc, 3);
   if (vals[3] == 1.0) bars.leds(opc, 4);
   if (vals[4] == 1.0) bars.leds(opc, 5);
+  
+  bars.buildList();
 }
 
 void controlEvent(ControlEvent theEvent) {
@@ -153,28 +148,9 @@ void controlEvent(ControlEvent theEvent) {
   } else if (theEvent.name().equals("videos")) {
     println("Event: "+theEvent.getGroup().getValue()+" from "+ theEvent.getGroup());
     playVideo(int(theEvent.getGroup().getValue()));
-  } else if (theEvent.name().equals("bars")) {
-    int sel = int(theEvent.getGroup().getValue());
-    bars.selected(sel);
   }
   
-  if (theEvent.isController()) {
-    if (theEvent.isFrom(c5.getController("Add Bar"))) {
-      println(theEvent.getController().getName());
-      
-      //Bar s1b1 = new Bar();
-    } else if (theEvent.isFrom(c5.getController("Export Bars"))) {
-      bars.save();
-    } else if (theEvent.isFrom(c5.getController("Import Bars"))) {
-      bars.importBrowse();
-    } else if (theEvent.isFrom(c5.getController("Reset"))) {
-      bars.reset();
-    } else if (theEvent.isFrom(c5.getController("Apply"))) {
-      bars.apply();
-    }
-    println("got a control event from controller with id "+theEvent.getController().getId());
-  }
-
+  if (bars != null) bars.controlEvent(theEvent);
 }
 
 void checkBox(float[] a) {
@@ -182,8 +158,7 @@ void checkBox(float[] a) {
 }
 
 void keyPressed() {
-  println(bars.isFocus());
-  if (bars.isFocus() == true) {
+  if (bars != null && bars.isFocus() == true) {
     return;
   }
   
