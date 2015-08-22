@@ -42,8 +42,8 @@ void setup() {
   // spout.initReceiver();
   frameRate(60);
   
-  opc = new OPC(this, "127.0.0.1", 7890);
-  LED_config(opc);
+  opc = new OPC(this, "192.168.0.12", 7890);
+  section1(opc);
 } 
 
 void draw() {
