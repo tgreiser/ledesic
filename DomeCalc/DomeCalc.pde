@@ -12,7 +12,7 @@ StringList data;
 // 450 x 450
 void setup() {
   
-  table = loadTable("bars-fullsize.csv", "header");
+  table = loadTable("silvercloud2.csv", "header");
 
   data = new StringList();
   String lastSection = "";
@@ -20,7 +20,7 @@ void setup() {
   for (TableRow row : table.rows()) {
     
     int id = row.getInt("index");
-    String section = row.getString("Section");
+    String section = row.getString("driver");
     println(section+" = "+lastSection);
     if (section.equals(lastSection) == false) {
       println("No match");
@@ -30,25 +30,27 @@ void setup() {
       data.append("public void section"+section+"(OPC opc) {");
       lastSection = section;
     }
-    String bar = row.getString("Bar");
+    String bar = row.getString("bar");
     int x1 = 0;
     int x2 = 0;
     int y1 = 0;
     int y2 = 0;
+    /*
     if (row.getString("reverse") == "1") {
       x1 = row.getInt("x2");
       x2 = row.getInt("x1");
       y1 = row.getInt("y2");
       y2 = row.getInt("y1");
     } else {
+      */
       x1 = row.getInt("x1");
       x2 = row.getInt("x2");
       y1 = row.getInt("y1");
       y2 = row.getInt("y2");
-    }
-    x1 = int(float(x1+10) / 2.666667);
-    x2 = int(float(x2+10) / 2.666667);
-    
+    //}
+    //x1 = int(float(x1+10) / 2.666667);
+    //x2 = int(float(x2+10) / 2.666667);
+    /*
     float ty1 = float(y1*-1);
     ty1 += 1200;
     
@@ -58,6 +60,7 @@ void setup() {
     ty2 += 1200;
     
     y2 = int(ty2 / 2.666667);
+    */
     
     int num_leds = 30;
     float[] xs = interpolate(x1, x2, num_leds);
