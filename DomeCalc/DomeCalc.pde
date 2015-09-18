@@ -12,14 +12,14 @@ StringList data;
 // 450 x 450
 void setup() {
   
-  table = loadTable("silvercloud2.csv", "header");
+  table = loadTable("default.csv", "header");
 
   data = new StringList();
   String lastSection = "";
   
   for (TableRow row : table.rows()) {
     
-    int id = row.getInt("index");
+    int id = globalIndex(row.getInt("driver"), row.getInt("rail"), row.getInt("segment"));
     String section = row.getString("driver");
     println(section+" = "+lastSection);
     if (section.equals(lastSection) == false) {
@@ -30,7 +30,7 @@ void setup() {
       data.append("public void section"+section+"(OPC opc) {");
       lastSection = section;
     }
-    String bar = row.getString("bar");
+    String bar = row.getString("rail");
     int x1 = 0;
     int x2 = 0;
     int y1 = 0;
@@ -62,7 +62,7 @@ void setup() {
     y2 = int(ty2 / 2.666667);
     */
     
-    int num_leds = 30;
+    int num_leds = row.getInt("count");
     float[] xs = interpolate(x1, x2, num_leds);
     float[] ys = interpolate(y1, y2, num_leds); 
     
@@ -80,6 +80,12 @@ void setup() {
   // write out file
   saveStrings("data/LED_config.pde", data.array());
   println("Generated LED_config.pde");
+}
+
+int globalIndex(int driver, int rail, int index) {
+  return ((driver - 1) * 512) +
+    ((rail - 1) * 64) +
+    index;
 }
 
 float[] interpolate(int p1, int p2, int times) {
