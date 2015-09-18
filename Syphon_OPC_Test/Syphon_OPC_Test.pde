@@ -3,6 +3,7 @@ import codeanticode.syphon.*;
 PGraphics canvas;
 SyphonClient client;
 OPC opc;
+boolean showLocations = true;
 
 void setup() {
   
@@ -22,6 +23,7 @@ void setup() {
   frameRate(60);
   
   opc = new OPC(this, "192.168.0.12", 7890);
+  opc.showLocations(showLocations);
   section1(opc);
 } 
 
@@ -37,8 +39,12 @@ void draw() {
 
 // RH click to output server name
 void mousePressed() {
-  println(client.getServerName());
-  
+  if (showLocations == false) {
+    showLocations = true;
+  } else {
+    showLocations = false;
+  }
+  opc.showLocations(showLocations);
 }
 
 // over-ride exit to release sharing
